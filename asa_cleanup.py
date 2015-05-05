@@ -40,7 +40,7 @@ def create_item_count(list, config_file, type):
             count[i] = 1
           else:
             count[i] = count[i] + 1
-      elif type == 'ob':
+      elif type == 'ob' or type == 'obg':
         if i in line:
           if not i in count:
             count[i] = 1
@@ -67,32 +67,19 @@ def update_config_file(item_remove, config_file):
   return config_file
 
 # Update config file with object-group lines removed; ciscoconfparse library needed to remove child objects
-def update_config_file_parse(item_remove, config_file):
+def update_config_file_parse(item_remove, config_file, type):
   parse = CiscoConfParse(config_file)
   for i in item_remove:
-    for obj in parse.find_objects(r"^object-group network %s" %i):
-      obj.delete(r"^object-group network %s" %i)
+    if type == 'obg':
+      for obj in parse.find_objects(r"^object-group network %s" %i):
+        obj.delete(r"^object-group network %s" %i)
+    elif type == 'acl':
+      for obj in parse.find_objects(r"^access-list %s" %i):
+        obj.delete(r"^access-list %s" %i)
   config_file_new = []
   for line in parse.ioscfg:
     config_file_new.append(line)
   return config_file_new
-
-# Create group-policy dictionary; Select each acl from list and search each line in config for that object; If key(object) not found in dictionary populate dictionary with object and assign value of 1; If key is found, increment value by one as long as line does not begin with 'group-policy'
-def create_gp_count(list, config_file):
-  count = {}
-  for i in list:
-    for line in config_file:
-      if line.startswith('group-policy'):
-        if not i in count:
-          count[i] = 1
-        else:
-          continue
-      elif i in line:
-        if not i in count:
-          count[i] = 1
-        else:
-          count[i] = count[i] + 1
-  return count
 
 # Iterate through object dictionary and print keys that have a value of 1 (i.e. are not used anywhere in the config)
 def create_conf(dict, type):
@@ -120,12 +107,12 @@ def main():
     # Create dict(acl_count) of ACLs(keys) with number of times each appear in config(values); Create list(acl_remove) of ACLs to be removed; Update config_file with ACLs removed
     acl_count = create_item_count(acls, config_file, 'acl')
     acl_remove = create_item_remove(acl_count)
-    config_file = update_config_file(acl_remove, config_file)
+    config_file = update_config_file_parse(acl_remove, config_file, 'acl')
     
     # Create dict(object_group_count) of object-groups(keys) with number of times each appear in config(values); Create list(object_group_remove) of object-groups to be removed; Update config_file with object-groups removed
-    object_group_count = create_item_count(object_groups, config_file, 'ob')
+    object_group_count = create_item_count(object_groups, config_file, 'obg')
     object_group_remove = create_item_remove(object_group_count)
-    config_file = update_config_file_parse(object_group_remove, config_file)
+    config_file = update_config_file_parse(object_group_remove, config_file, 'obg')
    
     object_count = create_item_count(objects, config_file, 'ob')
 
@@ -138,10 +125,10 @@ def main():
     print "\n"
     print "Object Removal Lines:"
     create_conf(object_count, 'o')
-    
+    print "\n"   
+ 
   else:
     print "Config file missing.  Please include the full path of the ASA config file after the script."  
 
 if __name__ == '__main__':
   main()
-
