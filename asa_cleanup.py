@@ -51,6 +51,24 @@ def create_acl_count(list, config_file):
           count[i] = count[i] + 1
   return count
 
+# Create list of ACLs to be removed; This list will be imported into function 'update_config_file' to remove these lines from the config_file; Updated config_file will be used by object and object-group removal to prevent having to run program a second time after ACLs have been removed
+def create_acl_remove(acl_count):
+  acl_remove = []
+  for acl, count in acl_count.items():
+    if count == 1:
+      acl_remove.append(acl)
+  return acl_remove
+
+# Update config file with ACL lines removed
+def update_config_file(acl_remove, config_file):
+  for i in acl_remove:  
+    for line in config_file:
+      if i in line and line.startswith('access-list '):
+        config_file.remove(line)
+      else:
+        continue
+  return config_file
+
 # Iterate through object dictionary and print keys that have a value of 1 (i.e. are not used anywhere in the config)
 def create_conf(dict, type):
   for i in dict.keys():
@@ -71,9 +89,14 @@ def main():
   
     objects, object_groups, acls = create_list(config_file)
     
-    object_count = create_object_count(objects, config_file)
-    object_group_count = create_object_count(object_groups, config_file)
     acl_count = create_acl_count(acls, config_file)
+    
+    acl_remove = create_acl_remove(acl_count)
+
+    config_file_new = update_config_file(acl_remove, config_file)
+    
+    object_count = create_object_count(objects, config_file_new)
+    object_group_count = create_object_count(object_groups, config_file_new)
 
 #    print acl_count
 #    print "\n"
