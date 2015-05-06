@@ -1,3 +1,28 @@
+'''
+Name: asa_cleanup.py
+Description: Cisco ASA Firewall Configuration Cleanup Script
+Requires: Python 'sys' and 'ciscoconfparse' libraries
+
+Example Usage (Linux Command Line):
+
+~ $ asa_cleanup.py asa_config.cfg
+
+Example Output:
+
+ACL Removal Lines:
+clear configure access-list TEST_ACL
+clear configure access-list TEST2_ACL
+
+Object-Group Removal Lines:
+no object-group network TEST_OBJECT_GROUP
+no object-group network TEST2_OBJECT_GROUP
+
+Object Removal Lines:
+no object network TEST_OBJECT
+no object network TEST2_OBJECT
+
+'''
+
 #!/usr/bin/python -tt
 
 import sys
