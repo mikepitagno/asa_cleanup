@@ -34,8 +34,7 @@ import datetime
 import os
 
 class Item_Count:
-    """Class to return dictionary with item / count pairs for each specified type (e.g. Group Policies, ACL's, Objects)
-    """
+    """Class to return dictionary with item / count pairs for each specified type (e.g. Group Policies, ACL's, Objects)"""
     
     def __init__(self, list, config_file):
         self.list = list
@@ -76,7 +75,7 @@ class Item_Count:
     def obj(self):
         count = {}
         for i in self.list:
-            for line in self.config_file:    
+            for line in self.config_file:
                 if i in line:
                     if not i in count:
                         count[i] = 1
@@ -111,10 +110,10 @@ def create_list(config_file):
     
         if line.startswith('group-policy'):
             gp = (line.split()).pop(1)
-            if gp == 'DfltGrpPolicy':      
+            if gp == 'DfltGrpPolicy':
                 continue
             elif not gp in gps:
-                gps.append(gp)        
+                gps.append(gp)
     
     return (objects, object_groups, acls, gps)
 
@@ -169,7 +168,7 @@ def create_conf(dict, type):
             elif type == 'acl':
                 print "clear configure access-list %s" % (i)
             elif type == 'gp':
-                print "clear configure group-policy %s" % (i)             
+                print "clear configure group-policy %s" % (i)
 
 def main():
     """Start Main Program"""
@@ -231,4 +230,4 @@ def main():
         print "Config file missing.  Please include the full path of the ASA config file after the script."  
     
 if __name__ == '__main__':
-  main()
+    main()
