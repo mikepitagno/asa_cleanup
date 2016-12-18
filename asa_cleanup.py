@@ -83,6 +83,32 @@ class Item_Count:
                         count[i] += 1
         return count
 
+class Print_Conf:
+    """Iterate through object dictionary and print keys that have a value of 1 (i.e. are not used anywhere in the config)"""
+    
+    def __init__(self, dict):
+        self.dict = dict
+    
+    def obj(self):
+        for i in self.dict.keys():
+            if self.dict[i] == 1:
+                print "no object network %s" % (i)
+    
+    def obj_grp(self):
+        for i in self.dict.keys():
+            if self.dict[i] == 1:
+                print "no object-group network %s" % (i)
+    
+    def acl(self):
+        for i in self.dict.keys():
+            if self.dict[i] == 1:
+                print "clear configure access-list %s" % (i)
+    
+    def gp(self):
+        for i in self.dict.keys():
+            if self.dict[i] == 1:
+                print "clear configure group-policy %s" % (i)
+
 def create_list(config_file):
     """"Create lists for all objects, object_groups, acls and group-policies that exist within the provided configuration file"""
     
@@ -155,21 +181,6 @@ def update_config_file_parse(item_remove, config_file, type):
     
     return config_file_new
 
-def create_conf(dict, type):
-    """Iterate through object dictionary and print keys that have a value of 1 (i.e. are not used anywhere in the config)"""
-    
-    for i in dict.keys():
-    
-        if dict[i] == 1:
-            if type == 'o':
-                print "no object network %s" % (i)
-            elif type == 'og':
-                print "no object-group network %s" % (i)
-            elif type == 'acl':
-                print "clear configure access-list %s" % (i)
-            elif type == 'gp':
-                print "clear configure group-policy %s" % (i)
-
 def main():
     """Start Main Program"""
     
@@ -210,19 +221,19 @@ def main():
         sys.stdout=open("%s-CLEANUP-%s.txt" % (config_name,current_datetime), "w")
     
         print "Group Policy Removal Lines:"
-        create_conf(gp_count, 'gp')  
+        Print_Conf(gp_count).gp()
     
         print "\n"
         print "ACL Removal Lines:"
-        create_conf(acl_count, 'acl')  
+        Print_Conf(acl_count).acl()
     
         print "\n"
         print "Object-Group Removal Lines:"
-        create_conf(object_group_count, 'og')
+        Print_Conf(object_group_count).obj_grp()
     
         print "\n"
         print "Object Removal Lines:"
-        create_conf(object_count, 'o')
+        Print_Conf(object_count).obj()
     
         sys.stdout.close()
     
