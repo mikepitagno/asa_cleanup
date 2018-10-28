@@ -136,7 +136,7 @@ def element_remove_list(element_count):
     """Create list of items (e.g. group policies, ACLs) to be removed; Takes list as input"""
     
     element_remove = []
-    for element, count in element_count.items():
+    for element, count in list(element_count.items()):
         if count == 1:
             element_remove.append(element)
     return element_remove
@@ -147,7 +147,7 @@ def element_remove_dict(element_count):
     element_remove = {}
     for k in element_count:
         element_remove[k] = []
-        for element, count in element_count[k].items():
+        for element, count in list(element_count[k].items()):
             if count == 1:
                 element_remove[k].append(element)
     return element_remove
@@ -167,7 +167,7 @@ def update_conf_dict(element_remove, config_file, element_type):
     
     parse = CiscoConfParse(config_file)
     
-    for k,v in element_remove.items():
+    for k,v in list(element_remove.items()):
         element_type_new = element_type + " " + k
         for i in v:
             for obj in parse.find_objects(r"^%s %s" % (element_type_new, i)):
@@ -187,14 +187,14 @@ def generate_conf(parse):
 def print_conf_list(element_remove, element_type):
     """Create removal statements from element lists"""
     for i in element_remove:
-        print "clear configure %s %s" % (element_type, i)
+        print("clear configure %s %s" % (element_type, i))
 
 def print_conf_dict(element_remove, element_type):
     """Create removal statements from element dictionaries"""
-    for k,v in element_remove.items():
+    for k,v in list(element_remove.items()):
         element_type_new = element_type + " " + k
         for i in v:
-            print "no %s %s" % (element_type_new, i)
+            print("no %s %s" % (element_type_new, i))
 
 def main():
     """Start Main Program"""
@@ -248,19 +248,19 @@ def main():
         # Create file with cleanup info
         sys.stdout=open("%s-CLEANUP-%s.txt" % (config_name,current_datetime), "w")
     
-        print "Group Policy Removal Lines:"
+        print("Group Policy Removal Lines:")
         print_conf_list(gp_remove, gp)
     
-        print "\n"
-        print "ACL Removal Lines:"
+        print("\n")
+        print("ACL Removal Lines:")
         print_conf_list(acl_remove, acl)
     
-        print "\n"
-        print "Object-Group Removal Lines:"
+        print("\n")
+        print("Object-Group Removal Lines:")
         print_conf_dict(object_group_remove, obg)
     
-        print "\n"
-        print "Object Removal Lines:"
+        print("\n")
+        print("Object Removal Lines:")
         print_conf_dict(object_remove, ob)
     
         sys.stdout.close()
@@ -269,12 +269,12 @@ def main():
         sys.stdout=open("%s-NEW_CONFIG-%s.cfg" % (config_name,current_datetime), "w")
     
         for i in  config_file:
-            print i,
+            print(i, end=' ')
     
         sys.stdout.close()
     
     else:
-        print "Config file missing.  Please include the full path of the ASA config file after the script."  
+        print("Config file missing.  Please include the full path of the ASA config file after the script.")  
     
 if __name__ == '__main__':
     main()
