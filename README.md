@@ -6,6 +6,8 @@ A Python command line script to identify unused access-lists, object-groups and 
 
 Update (2016-10-12): Added support to cleanup unused group policies; Output now printed to file.
 
+Update (2018-10-28): Added support for different object and object_group types (e.g. network, service, protocol, icmp-type); Previously script would only parse network types; Script now outputs updated configuration file (.cfg) in addition to file with recommended changes (.txt). 
+
 ### Installation Notes / Prerequisites
 
 Python2 Version - asa_cleanup.py  
@@ -26,17 +28,23 @@ asa_cleanup.py 'CONFIG_FILE'
 ### Sample Output
 
 Group Policy Removal Lines:  
-clear configure group-policy TEST_GP  
-clear configure group-policy TEST_GP2
+clear configure group-policy GRP1  
+clear configure group-policy GRP2  
 
 ACL Removal Lines:  
-clear configure access-list TEST_ACL  
-clear configure access-list TEST2_ACL
+clear configure access-list ACL1  
+clear configure access-list ACL2  
 
 Object-Group Removal Lines:  
-no object-group network TEST_OBJECT_GROUP  
-no object-group network TEST2_OBJECT_GROUP
+no object-group network NETOBJECTGRP1  
+no object-group network NETOBJECTGRP2  
+no object-group service SERVOBJECTGRP1  
+no object-group service SERVOBJECTGRP2  
+no object-group icmp-type ICMPOBJECTGRP1  
+no object-group protocol PROTOCOLGRP1  
 
 Object Removal Lines:  
-no object network TEST_OBJECT  
-no object network TEST2_OBJECT  
+no object network NETOBJECT1  
+no object network NETOBJECT2  
+no object service SERVOBJECT1  
+no object service SERVOBJECT2  
